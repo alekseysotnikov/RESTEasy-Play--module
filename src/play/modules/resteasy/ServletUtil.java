@@ -77,7 +77,7 @@ public class ServletUtil
 		}
 
 		String path = PathHelper.getEncodedPathInfo(absolutePath.getRawPath(), contextPath);
-		List<PathSegment> pathSegments = PathSegmentImpl.parseSegments(path);
+		List<PathSegment> pathSegments = PathSegmentImpl.parseSegments(path, false);
 
 		URI baseURI = absolutePath;
 		if (!path.trim().equals(""))
@@ -104,6 +104,8 @@ public class ServletUtil
 		headers.setLanguage(requestHeaders.getFirst(HttpHeaderNames.CONTENT_LANGUAGE));
 
 		String contentType = request.contentType;
+		if(request.headers != null && request.headers.get("content-type") != null && request.headers.get("content-type").value() != null)
+			contentType = request.headers.get("content-type").value();
 		if (contentType != null) headers.setMediaType(MediaType.valueOf(contentType));
 
 		Map<String, Cookie> cookies = extractCookies(request);

@@ -79,6 +79,8 @@ public class RESTEasyRequestWrapper implements HttpRequest {
 		// read it from the body if possible
 		if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("application/x-www-form-urlencoded")))
 			params = DataParser.parsers.get("application/x-www-form-urlencoded").parse(request.body);
+		else if (getHttpHeaders().getMediaType().isCompatible(MediaType.valueOf("multipart/form-data")))
+			params = DataParser.parsers.get("multipart/form-data").parse(request.body);
 		else{
 			params = new HashMap<String, String[]>();
 		}
@@ -136,11 +138,14 @@ public class RESTEasyRequestWrapper implements HttpRequest {
 
 	public InputStream getInputStream() {
 		if (overridenStream != null) return overridenStream;
-		// reset the request body in play 1.2
-		try {
-			request.body.reset();
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to reset stream: new incompatible play version > 1.2 ?", e);
+		// reset the request body in play 1.2. We have either a ByteArrayIS, which supports and needs to be reset for some reason
+		// or a FileIS which for some reason doesn't support being reset and doesn't need it anyways
+		if(request.body.markSupported()){
+			try {
+				request.body.reset();
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to reset stream: new incompatible play version > 1.2 ?", e);
+			}
 		}
 		return request.body;
 	}
