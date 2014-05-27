@@ -1,0 +1,8 @@
+self: play -> resteasy-play-module 1.3.2
+
+require:
+    - play
+    - org.jboss.resteasy -> resteasy-jaxrs-all 2.3.7.Final
+    - org.jboss.resteasy -> resteasy-hibernatevalidator-provider 2.3.7.Final
+    - org.hibernate -> hibernate-validator 4.2.0.Final:
+        force: true
